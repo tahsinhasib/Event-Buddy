@@ -23,17 +23,8 @@ export class Booking {
   event: Event;
 
   @Column()
-  seats: number;
-
-  @Column()
-  eventLocation: string;
+  seatsBooked: number;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @Column('simple-array') // stores as CSV: "tag1,tag2"
-  tags: string[];
-
-  @Column({ nullable: true })
-  image: string;
 }

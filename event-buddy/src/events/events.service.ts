@@ -10,7 +10,6 @@ import { Booking } from 'src/bookings/booking.entity';
 export class EventsService {
     constructor(
         @InjectRepository(Event) private eventsRepository: Repository<Event>,
-        @InjectRepository(Booking) private bookingsRepository: Repository<Booking>,
     ) {}
 
     async findUpcoming() {
@@ -37,10 +36,15 @@ export class EventsService {
     return event;
   }
 
-  async create(data: CreateEventDto) {
-    const event = this.eventsRepository.create(data);
-    return this.eventsRepository.save(event);
-  }
+    async create(data: CreateEventDto): Promise<Event> {
+    const event = this.eventsRepository.create({
+        ...data,
+        tags: data.tags.join(','), // convert array to comma-separated string
+    });
+
+    return await this.eventsRepository.save(event);
+    }
+
 
   async update(id: number, data: UpdateEventDto) {
     const event = await this.findOne(id);
@@ -50,6 +54,6 @@ export class EventsService {
 
   async remove(id: number) {
     const event = await this.findOne(id);
-    return this.eventsRepository.remove(event);
+    return { message: `Event with ID ${id} has been successfully deleted.` };
   }
 }

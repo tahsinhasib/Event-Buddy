@@ -13,7 +13,7 @@ export class EventsController {
         private readonly eventsService: EventsService,
     ) {}
 
-    // Public
+    // Public (dynamic)
     @Get('upcoming')
     getUpcoming() {
         return this.eventsService.findUpcoming();
@@ -24,37 +24,46 @@ export class EventsController {
         return this.eventsService.findPast();
     }
 
-    @Get(':id')
-    getEvent(@Param('id', ParseIntPipe) id: number) {
-        return this.eventsService.findOne(id);
-    }
-
     // Admin only
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
-    @Get()
+    @Get('get-all')
     getAll() {
         return this.eventsService.findAll();
     }
 
+    // Admin only for creating events
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
-    @Post()
+    @Post('create-event')
     create(@Body() dto: CreateEventDto) {
         return this.eventsService.create(dto);
     }
 
+    // Admin only for updating events
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
-    @Patch(':id')
+    @Patch('update/:id')
     update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateEventDto) {
         return this.eventsService.update(id, dto);
     }
 
+    // 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
-    @Delete(':id')
+    @Delete('delete/:id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.eventsService.remove(id);
     }
+
+
+    // Public (dynamic)
+    @Get('details/:id')
+    getEvent(@Param('id', ParseIntPipe) id: number) {
+        return this.eventsService.findOne(id);
+    }
+
+    
+
+    
 }

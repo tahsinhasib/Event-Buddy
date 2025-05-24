@@ -16,6 +16,18 @@ export class Event {
   @Column({ type: 'timestamp' })
   date: Date;
 
+  @Column({ type: 'time' })
+  time: string; // e.g., "18:00:00"
+
+  @Column()
+  location: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  tags: string; // comma-separated, e.g., "music,live,festival"
+
+  @Column({ nullable: true })
+  image: string; // URL or path to image
+
   @Column()
   totalCapacity: number;
 
