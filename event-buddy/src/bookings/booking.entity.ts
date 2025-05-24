@@ -1,17 +1,9 @@
 // src/bookings/booking.entity.ts
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  CreateDateColumn,
-  Unique,
-} from 'typeorm';
-import { User } from '../users/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { Event } from '../events/event.entity';
+import { User } from '../users/user.entity';
 
 @Entity()
-@Unique(['user', 'event']) // Prevent duplicate bookings
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,7 +15,7 @@ export class Booking {
   event: Event;
 
   @Column()
-  seatsBooked: number;
+  seats: number;
 
   @CreateDateColumn()
   createdAt: Date;

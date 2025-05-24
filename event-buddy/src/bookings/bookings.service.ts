@@ -11,55 +11,42 @@ export class BookingsService {
     constructor(
         @InjectRepository(Booking) private bookingsRepository: Repository<Booking>,
         @InjectRepository(Event) private eventsRepository: Repository<Event>,
+        @InjectRepository(User) private usersRepository: Repository<User>,
     ) {}
 
-    async bookEvent(user: User, dto: CreateBookingDto) {
-        const event = await this.eventsRepository.findOne({
-            where: { id: dto.eventId },
-        });
+    
 
-        if (!event) {
-            throw new NotFoundException('Event not found');
-        }
+    // bookings.service.ts
 
-        if (new Date(event.date) < new Date()) {
-            throw new BadRequestException('Cannot book past events');
-        }
+    async bookEvent(dto: CreateBookingDto, userId: number) {
+    const event = await this.eventsRepository.findOne({ where: { id: dto.eventId } });
+    if (!event) throw new NotFoundException('Event not found');
 
-        const currentBooked = event.bookedSeats ?? 0;
-        const updatedSeats = currentBooked + dto.seats;
+    if (event.bookedSeats + dto.seats > event.totalCapacity) {
+        throw new BadRequestException('Not enough available seats');
+    }
 
-        if (updatedSeats > event.totalCapacity) {
-            throw new BadRequestException('Not enough available seats');
-        }
+    const booking = this.bookingsRepository.create({
+        user: { id: userId },        
+        event: { id: dto.eventId },
+        seats: dto.seats,
+    });
 
-        // Create booking
-        const booking = this.bookingsRepository.create({
-            user,
-            event,
-            seatsBooked: dto.seats,
-        });
+    await this.bookingsRepository.save(booking);
 
-        await this.bookingsRepository.save(booking);
+    event.bookedSeats += dto.seats;
+    await this.eventsRepository.save(event);
 
-        // Use .save instead of .update
-        event.bookedSeats = updatedSeats;
-        await this.eventsRepository.save(event);
-
-
-        return {
-            message: 'Booking successful',
-            booking,
-        };
+    return { message: 'Booking successful', booking };
     }
 
 
 
     async getUserBookings(user: User) {
         return this.bookingsRepository.find({
-        where: { user: { id: user.id } },
-        relations: ['event'],
-        order: { createdAt: 'DESC' },
-    });
-}
+            where: { user: { id: user.id } },
+            relations: ['event'],
+            order: { createdAt: 'DESC' },
+        });
+    }
 }

@@ -12,10 +12,10 @@ export class BookingsController {
     ) {}
 
     @Post("book-event")
-    @UseGuards(JwtAuthGuard) // Ensure only authenticated users can book events
-    create(@Body() dto: CreateBookingDto, @Req() req) {
-        return this.bookingsService.bookEvent(req.user, dto);
+    book(@Body() dto: CreateBookingDto, @Req() req) {
+        return this.bookingsService.bookEvent(dto, req.user.userId);
     }
+
 
     @Get('my-bookings')
     @UseGuards(JwtAuthGuard) // Ensure only authenticated users can view their bookings
