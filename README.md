@@ -1,4 +1,4 @@
-# Event-Buddy
+# Event-Buddy Documentation
 
 npm install --save @nestjs/typeorm typeorm pg
 npm install --save @nestjs/config
